@@ -1,9 +1,12 @@
 package com.recipescrapers.main;
 
-import org.testng.annotations.Test;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -12,15 +15,23 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.Test;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
+
 
 public class RecipeScraperTest {
 
 	int last_page;
 	WebDriver driver;
+	DatabaseClass db;
 
 	@Test
-	public void RecipeScrape() {
+	public void RecipeScrape() throws SQLException {
 
 		WebDriverManager.chromedriver().setup();
 
@@ -31,12 +42,18 @@ public class RecipeScraperTest {
 		options.addArguments("--remote-allow-origins=*");
 		options.addArguments("--headless");//executing in headless mode
 		options.addArguments("--disable-popup-blocking");
-		options.addArguments("-–disable-notifications");
-		options.addArguments("-–disable-extensions");
+		options.addArguments("--disable-notifications");
+		options.addArguments("--disable-extensions");
 
 		driver = new ChromeDriver(options);
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
+		db = new DatabaseClass();
+		db.createDatabase();
+		db.connect();
+		db.createTable();
+		 
+		
 		try {
 			driver.get("https://www.tarladalal.com/");
 			driver.manage().window().maximize();
@@ -48,7 +65,7 @@ public class RecipeScraperTest {
 
 			// Get total number of alphabet links
 			int alphaPageSize = driver.findElements(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)']")).size();
-			for (int i = 2; i < alphaPageSize; i++) {
+			for (int i = 2; i <=2; i++) {
 				// Click on each alphabet link
 				if (i > 2) {
 					driver.findElement(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)'][" + i + "]")).click();
@@ -63,7 +80,7 @@ public class RecipeScraperTest {
 				}
 
 				// Iterate through each page
-				for (int j = 1; j <= last_page; j++) {
+				for (int j = 1; j <= 2; j++) {
 					// Navigate to next page if applicable
 					if (j > 1) {
 						driver.findElement(By.xpath("//div[@style='text-align:right;padding-bottom:15px;'][1]/a[contains(text()," + j + ")]")).click();
@@ -110,11 +127,16 @@ public class RecipeScraperTest {
 			if (driver != null) {
 				driver.quit();// closing driver at the end
 			}
+			//db.closeConnection();
 		}
 
 	}
-	public void recipeDataScraper(WebDriver driver) {
+	public void recipeDataScraper(WebDriver driver) throws JsonParseException, JsonMappingException, IOException, SQLException {
+		
+		 //ObjectMapper om = new ObjectMapper();
+	      //  EliminatorsAndToAdd eliminator = om.readValue(new File("src/test/resources/list.json"), EliminatorsAndToAdd.class);
 
+	        
 		//System.out.println("Extracting data from: " + driver.getCurrentUrl());
 
 		//extracting recipe id from the current url
@@ -165,5 +187,7 @@ public class RecipeScraperTest {
 		//Getting No of Servings
 		String numOfServings = driver.findElement(By.xpath("//span[@id='ctl00_cntrightpanel_lblServes']")).getText();
 		System.out.println("No of Servings : "+numOfServings);
+	
+	db.insertRecipeData(recipeId, recipeTitle, preperationTime, cookingTime, ingredients, cuisineCategory, numOfServings);
 	}
 }
