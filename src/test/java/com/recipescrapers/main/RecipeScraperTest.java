@@ -7,7 +7,11 @@ import java.sql.SQLException;
 import org.testng.annotations.Test;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -30,6 +34,8 @@ public class RecipeScraperTest {
 	int last_page;
 	WebDriver driver;
 	DatabaseClass db;
+	List<Recipe> allRecipesList = new ArrayList();
+	List lchfRecipeList;
 
 	@Test
 	public void RecipeScrape() throws SQLException {
@@ -68,13 +74,13 @@ public class RecipeScraperTest {
 			// Get total number of alphabet links
 			int alphaPageSize = driver.findElements(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)']")).size();
 
-			for (int i = 2; i < alphaPageSize; i++) {
+			for (int i = 2; i <=4; i++) {
 				// Click on each alphabet link
 				if (i > 2) {
 					driver.findElement(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)'][" + i + "]")).click();
 				}
 
-				if (i != 25) {
+				if (i != 25) {//there is no pagination for letter 'x' with index 25
 					// Get pagination links
 					List<WebElement> pagination1 = driver.findElements(By.xpath("//div[contains(text(),'Goto Page')]/a"));
 					WebElement lastPageElement = pagination1.get(pagination1.size() - 1);
@@ -83,7 +89,7 @@ public class RecipeScraperTest {
 				}
 
 				// Iterate through each page
-				for (int j = 1; j <= last_page; j++) {
+				for (int j = 1; j <= 1; j++) {
 					// Navigate to next page if applicable
 					if (j > 1) {
 						driver.findElement(By.xpath("//div[@style='text-align:right;padding-bottom:15px;'][1]/a[contains(text()," + j + ")]")).click();
@@ -99,7 +105,6 @@ public class RecipeScraperTest {
 						System.out.println("TimeoutException occurred while waiting for recipe links: " + e.getMessage());
 						continue; // Skip to the next iteration if exception occurs
 					}
-
 
 					// Open each recipe link in a new tab
 					for (WebElement link : recipeLinks) {
@@ -127,6 +132,12 @@ public class RecipeScraperTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
+			//using java streams(lambda expression) for filtering data
+			//using contains any method from collectionutils to filter the ingredients from two arraylist(converted ingredients from arrays to arraylist)
+			lchfRecipeList = allRecipesList.stream().filter(rec ->
+			!CollectionUtils.containsAny(Arrays.asList(rec.getIngredients().toLowerCase().split(",")),Arrays.asList(RecipeConstants.LCHFToEliminate.toLowerCase().split(",")))).collect(Collectors.toList());
+			System.out.println("LCHF Recipe List : " + lchfRecipeList);
+
 			if (driver != null) {
 				driver.quit();// closing driver at the end
 			}
@@ -135,22 +146,23 @@ public class RecipeScraperTest {
 	}
 	public void recipeDataScraper(WebDriver driver) {
 
-		//System.out.println("Extracting data from: " + driver.getCurrentUrl());
-
+		//Getting Recipe Url;
+		String recipeUrl = driver.getCurrentUrl();
 		//extracting recipe id from the current url
-		String currentUrl = driver.getCurrentUrl();
 		//Split the URL by hyphen and 'r' to get the parts
-		String[] parts = currentUrl.split("-");
+		String[] parts = recipeUrl.split("-");
 		// The recipe ID is the last part before 'r'
 		String recipeId = parts[parts.length - 1].replace("r", "");
 		System.out.println("*************************************************");
 		System.out.println("Recipe Id : " + recipeId);
+		Recipe recipe = new Recipe();
+		recipe.setRecipeID(recipeId);
 
 		//Getting the recipe name
 		WebElement recipeTitleElement = driver.findElement(By.xpath("//div[@id='recipehead']//span//span"));
 		String recipeTitle = recipeTitleElement.getText();
 		System.out.println("Recipe Name : " + recipeTitle);
-
+		recipe.setRecipeName(recipeTitle);
 		//getting preparation time
 		String preperationTime = driver.findElement(By.xpath("//time[@itemprop='prepTime']")).getText();
 		System.out.println("Preparation Time : " + preperationTime);
@@ -164,8 +176,8 @@ public class RecipeScraperTest {
 				.findElements(By.xpath("//span[@itemprop='recipeIngredient']"));
 
 		String ingredients = "";
-		for (WebElement e1 : ingredintsLoc) {
-			ingredients = ingredients + "\n" + e1.getText();
+		for (WebElement ingredient : ingredintsLoc) {
+			ingredients = ingredients + "," + ingredient.getText();
 		}
 		System.out.println("Ingredients : " + ingredients);
 
@@ -173,14 +185,12 @@ public class RecipeScraperTest {
 				.findElements(By.xpath("//span[@itemprop='recipeIngredient']/a/span"));
 
 		String ingredientsName = "";
-		for (WebElement e1 : ingredintsNameLoc) {
-			ingredientsName = ingredientsName + "\n" + e1.getText();
+		for (WebElement ingredientName : ingredintsNameLoc) {
+			ingredientsName = ingredientsName + "," + ingredientName.getText();
 		}
 		System.out.println("Ingredients Name : " + ingredientsName);
-
-		//Getting Cuisine Category
-		String cuisineCategory = driver.findElement(By.xpath("//div[@class='breadcrumb']/span[7]/a/span")).getText();
-		System.out.println(cuisineCategory);
+		recipe.setIngredients(ingredientsName);
+		allRecipesList.add(recipe);
 
 					// Wait for recipe links to be present
 					//List<WebElement> recipeLinks = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//span[@class='rcc_recipename']/a")));
@@ -286,5 +296,58 @@ public class RecipeScraperTest {
 	
 	db.insertRecipeData(recipeId, recipeTitle, preperationTime, cookingTime, ingredients, cuisineCategory, numOfServings);
 
+		//Getting tags
+		List<WebElement> tagsLoc = driver.findElements(By.xpath("//div[@id='recipe_tags']/a"));
+		String tags = "";
+		for (WebElement tag : tagsLoc) {
+			tags = tags + "\n" + tag.getText();
+		}
+		System.out.println("Recipe Tags : " + tags);
+
+		//Getting Recipe Description
+		String recipeDescription = driver.findElement(By.id("recipe_description")).getText();
+		System.out.println("Recipe Description : " + recipeDescription );
+
+		//Getting Preperation Method
+		List<WebElement> prepMethod = driver.findElements(By.xpath("//*[@id='recipe_small_steps']/span[1]//span[@itemprop='text']"));
+		String preparationMethod = "";
+		for (WebElement method : prepMethod) {
+			preparationMethod = preparationMethod + "\n" + method.getText();
+		}
+		System.out.println("Preparation Method : " + preparationMethod );
+
+		//Getting Nutrition values
+		List<WebElement> nutritionLoc = driver.findElements(By.xpath("//*[@id='rcpnutrients']//tr"));
+		String nutritionValues = "";
+		for (WebElement nutrition : nutritionLoc) {
+			nutritionValues = nutritionValues + "\n" + nutrition.getText();
+		}
+		System.out.println("Nutrition Values : " + nutritionValues );
+
+		//Recipe Url
+		System.out.println("Recipe Url: " + recipeUrl);
+		
+		// Determining the food category based on the tags and ingredients
+		String foodCategory = "Vegetarian";//by default food category is vegetarian
+		String combinedText = (tags + ingredientsName).toLowerCase();//combining tags and ingredientname for filtering
+		//using streams to check if there is any match with the ingredients in arraylist and the string
+		boolean isEggetarian = !Arrays.stream(RecipeConstants.eggetarianEliminateOptions).anyMatch(combinedText::contains);
+		boolean isVegan = !Arrays.stream(RecipeConstants.veganEliminateOptions).anyMatch(combinedText::contains);
+		if(combinedText.contains("egg") && isEggetarian ){
+			foodCategory = "Eggetarian"; 
+		} else if(combinedText.contains("jain")) { 
+			foodCategory = "Jain"; 
+		}
+		else if(isVegan || combinedText.contains("vegan")
+				||recipeUrl.contains("vegan")
+				){ 
+			foodCategory = "Vegan"; 
+		} 
+		System.out.println("Food Category : " + foodCategory );
+
+		//Getting Recipe Category (breakfast,lunch,snack,dinner)
+
+
 	}
+
 }
