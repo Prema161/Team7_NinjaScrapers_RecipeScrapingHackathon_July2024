@@ -1,7 +1,11 @@
 {
-"url": "https://www.tarladalal.com/RecipeAtoZ.aspx?beginswith="
 
-
-
-
+"LFVeliminate": "pork,Meat,Poultry,Fish,Sausage,ham,salami,bacon,milk,cheese,yogurt,butter,Ice cream,egg,prawn,oil,olive oil,coconut oil,soybean oil,corn oil,safflower oil,sunflower oil,grapeseed oil,peanut oil,cottonseed oil,canola oil,mustard oil,cereals,tinned vegetable,bread,maida,atta,sooji,poha,cornflake,cornflour,pasta,White rice,pastry,cakes,biscuit,soy,soy milk,white miso paste,soy sauce,soy curls,edamame,soy yogurt,soy nut,tofu,pies,chip,cracker,potato,sugar,jaggery,glucose,frutose,corn syrup,cane sugar,aspartame,cane solid,maltose,dextrose,sorbitol,mannitol,xylitol,maltodextrin,molasses,brown rice syrup,splenda,nutra sweet,stevia,barley malt",	            
+"LFVadd" :"Lettuce,kale,chard,arugula,spinach,cabbage,pumpkin,sweet potatoes,purple potatoes,yams,turnip,parsnip,karela,bittergourd,beet,carrot,cucumber,red onion,white onion,broccoli,cauliflower,carrot,celery,artichoke,bell pepper,mushroom,tomato,sweet and hot pepper,banana,mango,papaya,plantain,apple,orange,pineapple,pear,tangerine,all berry varieties,all melon varieties,peach,plum,nectarine,Avocado,Amaranth,Rajgira,Ramdana Barnyard,Sanwa,Samvat ke chawal buckwheat,kuttu finger millet,Ragi,Nachni foxtail millet,kangni,kakum kodu,kodon,little millet,moraiyo,kutki,shavan,sama pearl millet,bajra,broom corn millet,chena sorghum,jowar,Lentil,Pulse,Moong dhal,masoor dhal,toor dhal,urd dhal,lobia,rajma,matar,all forms of chana,almond,cashew,pistachio,brazil nut,walnut,pine nut,hazelnut,macadamia nut,pecan,peanut,hemp seed,sun flower seed,sesame seed,chia seed,flax seed",
+"LFVToAdd":"Butter,Ghee,salmon,mackerel,sardines",
+"LFVRecipeToAvoid":"fried food,microwave meals or ready meals,Chips,crackers",
+"LCHEeliminate":"Ham,sausage,tinned fish,tuna,sardines,yams,beets,parsnip,turnip,rutabagas,carrot,yuca,kohlrabi,celery root,horseradish,daikon,jicama,radish,pumpkin,squash,Whole fat milk,low fat milk,fat free milk,Evaporated milk,condensed milk,curd,buttermilk,ice cream,flavored milk,sweetened yogurt,soft cheese,grain,Wheat,oat,barely,rice,millet,jowar,bajra,corn,dal,lentil,banana,mango,papaya,plantain,apple,orange,pineapple,pear,tangerine,all melon varieties,peach,plum,nectarine,Avocado,olive oil,coconut oil,soybean oil,corn oil,safflower oil,sunflower oil,rapeseed oil,peanut oil,cottonseed oil,canola oil,mustard oil,sugar,jaggery,glucose,fructose,corn syrup,cane sugar,aspartame,cane solids,maltose,dextrose,sorbitol,mannitol,xylitol,maltodextrin,molasses,brown rice syrup,splenda,nutra sweet,stevia,barley malt,potato,corn,pea",
+"LCHEadd":"Fish,prawn,poultry,egg,Onion,Garlic,turmeric,Ginger,Butter,ghee,hard cheese,paneer,cottage cheese,sour cream,greek yogurt,hung curd,almond,pistachio,brazil nut,walnut,pine nut,hazelnut,macadamia nut,pecan,hemp seed,sunflower seed,sesame seed,chia seed,flax seed,Blueberry,blackberry,strawberry",
+"LCHEFoodProcessin":"Raw,steamed,Boiled,Porched,Sauted,Airfryed,Pan fried",
+"allergy":"Milk,Soy,Egg,Sesame,Peanuts,walnut,almond,hazelnut,pecan,cashew,pistachio,Shell fish,Seafood"
 }
