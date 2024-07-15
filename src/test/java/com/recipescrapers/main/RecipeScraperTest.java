@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 
+
 public class RecipeScraperTest {
 
 	int last_page;
@@ -74,7 +75,7 @@ public class RecipeScraperTest {
 			// Get total number of alphabet links
 			int alphaPageSize = driver.findElements(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)']")).size();
 
-			for (int i = 2; i <= alphaPageSize; i++) {
+			for (int i = 2; i <= 6; i++) {
 				// Click on each alphabet link
 				if (i > 2) {
 					driver.findElement(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)'][" + i + "]")).click();
@@ -88,7 +89,7 @@ public class RecipeScraperTest {
 				}
 
 				// Iterate through each page
-				for (int j = 1; j <= last_page; j++) {
+				for (int j = 1; j <= 1; j++) {
 					// Navigate to next page if applicable
 					if (j > 1) {
 						driver.findElement(By.xpath("//div[@style='text-align:right;padding-bottom:15px;'][1]/a[contains(text()," + j + ")]")).click();
@@ -275,7 +276,7 @@ public class RecipeScraperTest {
 		System.out.println("Food Category : " + foodCategory );
 		
 
-		Recipe recipe = new Recipe();
+		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,foodCategory,tags, nutritionValues, recipeUrl);
 		recipe.setRecipeID(recipeId);
 		recipe.setRecipeName(recipeTitle);
 		recipe.setIngredientsName(ingredientsName);
@@ -290,11 +291,11 @@ public class RecipeScraperTest {
 		recipe.setFoodCategory(foodCategory);
 		recipe.setLfvRecipesToAvoid(lfvRecipesToAvoid);
 		
-		allRecipesList.add(recipe);
-
+		//allRecipesList.add(recipe);
+ allRecipesList.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl));
 		//Getting Recipe Category (breakfast,lunch,snack,dinner)
 
-		db.insertRecipeData(recipeId, recipeTitle, preperationTime, cookingTime, ingredients, cuisineCategory, numOfServings);
+db.insertData(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl);
 	}
 	
 	public List<Recipe> filterRecipes(List<Recipe> recipeList,String filterString, boolean toBeNotIncluded)
