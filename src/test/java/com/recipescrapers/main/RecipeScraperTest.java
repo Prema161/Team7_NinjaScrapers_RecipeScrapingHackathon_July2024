@@ -75,7 +75,7 @@ public class RecipeScraperTest {
 			// Get total number of alphabet links
 			int alphaPageSize = driver.findElements(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)']")).size();
 
-			for (int i = 2; i <= 6; i++) {
+			for (int i = 2; i <= alphaPageSize; i++) {
 				// Click on each alphabet link
 				if (i > 2) {
 					driver.findElement(By.xpath("//td[@onmouseover='Menu_HoverStatic(this)'][" + i + "]")).click();
@@ -89,7 +89,7 @@ public class RecipeScraperTest {
 				}
 
 				// Iterate through each page
-				for (int j = 1; j <= 1; j++) {
+				for (int j = 1; j <= last_page; j++) {
 					// Navigate to next page if applicable
 					if (j > 1) {
 						driver.findElement(By.xpath("//div[@style='text-align:right;padding-bottom:15px;'][1]/a[contains(text()," + j + ")]")).click();
@@ -204,7 +204,7 @@ public class RecipeScraperTest {
 
 		String ingredients = "";
 		for (WebElement e1 : ingredintsLoc) {
-			ingredients = ingredients + "\n" + e1.getText();
+			ingredients = ingredients + " " + e1.getText();
 		}
 		System.out.println("Ingredients : " + ingredients);
 
@@ -232,7 +232,7 @@ public class RecipeScraperTest {
 			if(!lfvRecipesToAvoid) {
 				lfvRecipesToAvoid = Arrays.stream(RecipeConstants.LFV_RECIPES_TO_AVOID).anyMatch(tag.getText().toLowerCase()::contains);	
 			}
-			tags = tags + "\n" + tag.getText();
+			tags = tags + " " + tag.getText();
 		}
 		System.out.println("Recipe Tags : " + tags);
 		//Getting Recipe Description
@@ -243,7 +243,7 @@ public class RecipeScraperTest {
 		List<WebElement> prepMethod = driver.findElements(By.xpath("//*[@id='recipe_small_steps']/span[1]//span[@itemprop='text']"));
 		String preparationMethod = "";
 		for (WebElement method : prepMethod) {
-			preparationMethod = preparationMethod + "\n" + method.getText();
+			preparationMethod = preparationMethod + " " + method.getText();
 		}
 		System.out.println("Preparation Method : " + preparationMethod );
 
@@ -251,7 +251,7 @@ public class RecipeScraperTest {
 		List<WebElement> nutritionLoc = driver.findElements(By.xpath("//*[@id='rcpnutrients']//tr"));
 		String nutritionValues = "";
 		for (WebElement nutrition : nutritionLoc) {
-			nutritionValues = nutritionValues + "\n" + nutrition.getText();
+			nutritionValues = nutritionValues + " " + nutrition.getText();
 		}
 		System.out.println("Nutrition Values : " + nutritionValues );
 
@@ -276,7 +276,7 @@ public class RecipeScraperTest {
 		System.out.println("Food Category : " + foodCategory );
 		
 
-		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,foodCategory,tags, nutritionValues, recipeUrl);
+		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredients,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,foodCategory,tags, nutritionValues, recipeUrl);
 		recipe.setRecipeID(recipeId);
 		recipe.setRecipeName(recipeTitle);
 		recipe.setIngredientsName(ingredientsName);
@@ -287,15 +287,18 @@ public class RecipeScraperTest {
 		recipe.setRecipeDescription(recipeDescription);
 		recipe.setPreparationMethod(preparationMethod);
 		recipe.setNutritionValues(nutritionValues);
+		recipe.setTags(tags);
+		recipe.setCuisineCategory(cuisineCategory);
 		recipe.setRecipeUrl(recipeUrl);
 		recipe.setFoodCategory(foodCategory);
 		recipe.setLfvRecipesToAvoid(lfvRecipesToAvoid);
 		
 		//allRecipesList.add(recipe);
- allRecipesList.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl));
-		//Getting Recipe Category (breakfast,lunch,snack,dinner)
+ allRecipesList.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredients, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl));
+ db.insertData(recipeId, recipeTitle, recipeDescription, ingredients, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl);		
+ //Getting Recipe Category (breakfast,lunch,snack,dinner)
+ lchfEliminationRecipes.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredients, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl));
 
-db.insertData(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl);
 	}
 	
 	public List<Recipe> filterRecipes(List<Recipe> recipeList,String filterString, boolean toBeNotIncluded)

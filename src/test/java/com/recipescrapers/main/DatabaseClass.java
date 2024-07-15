@@ -32,7 +32,7 @@ public class DatabaseClass {
     public void createTable() throws SQLException {
        
         String createTableSQL = "CREATE TABLE IF NOT EXISTS recipes (\n"
-        		+ "                   id text PRIMARY KEY,\n"
+        		+ "                   id text,\n"
         		+ "                    title text NOT NULL,\n"
         		+ "                    description text,\n"
         		+ "                    ingredients text,\n"
@@ -57,7 +57,7 @@ public class DatabaseClass {
     
     public void createLCHFTable() {
         String sql = "CREATE TABLE IF NOT EXISTS matching_recipes (\n"
-               + "    id text PRIMARY KEY,\n"
+               + "    id text,\n"
                 + "    title text NOT NULL,\n"
                 + "    description text,\n"
                 + "    ingredients text,\n"
@@ -79,8 +79,33 @@ public class DatabaseClass {
             System.out.println(e.getMessage());
         }
     }
+    public void LCHFToAdd() {
+    	
+    }
     
+    public void LCHFAllergy() {
+    	
+    }
     
+    public void LFVElimination() {
+    	
+    }
+    
+    public void LFVfullyVegan() {
+    	
+    }
+    
+    public void LFVPartiallyVegan() {
+    	
+    }
+    
+    public void LFVOptionalRecipes() {
+    	
+    }
+    
+    public void Allergies() {
+    	
+    }
     public void insertData(String id, String title, String description, String ingredients, String preparationTime,
             String cookingTime, String preparationMethod, String servings, String cuisine, String category, String tags,
             String nutrition, String url) {
