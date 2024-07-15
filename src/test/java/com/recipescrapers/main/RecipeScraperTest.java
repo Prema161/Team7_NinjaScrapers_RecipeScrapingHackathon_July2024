@@ -164,6 +164,7 @@ public class RecipeScraperTest {
 			System.out.println("******PartialVeganLFV RECIPES : " + lfvToAddRecipes);
 
 			
+		
 			if (driver != null) {
 				driver.quit();// closing driver at the end
 			}
@@ -173,6 +174,7 @@ public class RecipeScraperTest {
 	public void recipeDataScraper(WebDriver driver) throws JsonParseException, JsonMappingException, IOException, SQLException {
 		
 		boolean lfvRecipesToAvoid = false ;
+
 		//extracting recipe id from the current url
 		String recipeUrl = driver.getCurrentUrl();
 		//Split the URL by hyphen and 'r' to get the parts
@@ -314,4 +316,6 @@ public class RecipeScraperTest {
 		
 		
 	}
+
+		
 }
