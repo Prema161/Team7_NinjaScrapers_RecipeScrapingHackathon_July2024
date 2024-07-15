@@ -2,8 +2,47 @@ package com.recipescrapers.main;
 
 public class Recipe {
 	
-	private String recipeID,recipeName,ingredients,recipeDescription,preparationMethod,nutritionValues,recipeUrl,preperationTime,cookingTime,numOfServings,foodCategory,ingredientsName;
+	private String recipeID,recipeName,ingredients,recipeDescription,preparationMethod,nutritionValues,recipeUrl,preperationTime,cookingTime,numOfServings,cuisineCategory,foodCategory,tags,ingredientsName;
 	private boolean lfvRecipesToAvoid;
+	
+	//constructor
+	  public Recipe(String recipeId, String recipeTitle, String recipeDescription, String ingredientsName,
+	            String preperationTime, String cookingTime, String preparationMethod, String numOfServings,
+	            String cuisineCategory, String foodCategory, String tags, String nutritionValues, String recipeUrl) {
+	        this.recipeID = recipeId;
+	        this.recipeName = recipeTitle;
+	        this.recipeDescription = recipeDescription;
+	        this.ingredientsName = ingredientsName;
+	        this.preperationTime = preperationTime;
+	        this.cookingTime = cookingTime;
+	        this.preparationMethod = preparationMethod;
+	        this.numOfServings = numOfServings;
+	        this.cuisineCategory = cuisineCategory;
+	        this.foodCategory = foodCategory;
+	        this.tags = tags;
+	        this.nutritionValues = nutritionValues;
+	        this.recipeUrl = recipeUrl;
+	    }
+	
+	
+	
+	
+	public String getCuisineCategory() {
+		return cuisineCategory;
+	}
+
+	public void setCuisineCategory(String cuisineCategory) {
+		this.cuisineCategory = cuisineCategory;
+	}
+	
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
+	
 	public String getIngredientsName() {
 		return ingredientsName;
 	}

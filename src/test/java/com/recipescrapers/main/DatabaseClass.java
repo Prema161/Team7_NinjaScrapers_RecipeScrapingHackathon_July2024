@@ -30,46 +30,81 @@ public class DatabaseClass {
     }
 
     public void createTable() throws SQLException {
-        if (conn == null || conn.isClosed()) {
-            connect();
+       
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS recipes (\n"
+        		+ "                   id text PRIMARY KEY,\n"
+        		+ "                    title text NOT NULL,\n"
+        		+ "                    description text,\n"
+        		+ "                    ingredients text,\n"
+        		+ "                    preparation_time text,\n"
+        		+ "                    cooking_time text,\n"
+        		+ "                    preparation_method text,\n"
+        		+ "                    servings text,\n"
+        		+ "                    cuisine text,\n"
+        		+ "                    category text,\n"
+        		+ "                    tags text,\n"
+        		+ "                    nutrition text,\n"
+        		+ "                    url text\n"
+        		+ "             );";
+        
+        try (Connection conn = this.connect();
+                Statement stmt = conn.createStatement()) {
+            stmt.execute(createTableSQL);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        Statement stmt = conn.createStatement();
-        String createTableSQL = "CREATE TABLE IF NOT EXISTS recipes (" +
-                //"id INT AUTO_INCREMENT PRIMARY KEY," +
-                "recipe_id VARCHAR(255) NOT NULL," +
-                "name VARCHAR(255) NOT NULL," +
-                "prep_time VARCHAR(255)," +
-                "cook_time VARCHAR(255)," +
-                "ingredients TEXT," +
-              //  "ingredient_names TEXT," +
-                "cuisine_category VARCHAR(255)," +
-                "servings VARCHAR(255)" +
-                ")";
-        stmt.executeUpdate(createTableSQL);
-        stmt.close();
     }
+    
+    public void createLCHFTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS matching_recipes (\n"
+               + "    id text PRIMARY KEY,\n"
+                + "    title text NOT NULL,\n"
+                + "    description text,\n"
+                + "    ingredients text,\n"
+                + "    preparation_time text,\n"
+                + "    cooking_time text,\n"
+                + "    preparation_method text,\n"
+                + "    servings text,\n"
+                + "    cuisine text,\n"
+                + "    category text,\n"
+                + "    tags text,\n"
+                + "    nutrition text,\n"
+                + "    url text\n"
+                + ");";
 
-    public void insertRecipeData(String recipeId, String name, String prepTime, String cookTime, String ingredients, String cuisineCategory, String servings) throws SQLException {
-        if (conn == null || conn.isClosed()) {
-            connect();
+        try (Connection conn = this.connect();
+                Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        String insertSQL = "INSERT INTO recipes (recipe_id, name, prep_time, cook_time, ingredients, ingredient_names, cuisine_category, servings) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement preparedStatement = conn.prepareStatement(insertSQL);
-        preparedStatement.setString(1, recipeId);
-        preparedStatement.setString(2, name);
-        preparedStatement.setString(3, prepTime);
-        preparedStatement.setString(4, cookTime);
-        preparedStatement.setString(5, ingredients);
-       // preparedStatement.setString(6, ingredientNames);
-        preparedStatement.setString(7, cuisineCategory);
-        preparedStatement.setString(8, servings);
-        preparedStatement.executeUpdate();
-        preparedStatement.close();
     }
+    
+    
+    public void insertData(String id, String title, String description, String ingredients, String preparationTime,
+            String cookingTime, String preparationMethod, String servings, String cuisine, String category, String tags,
+            String nutrition, String url) {
+        String sql = "INSERT INTO recipes(id, title, description, ingredients, preparation_time, cooking_time, preparation_method, servings, cuisine, category, tags, nutrition, url) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    public void closeConnection() throws SQLException {
-        if (conn != null && !conn.isClosed()) {
-            conn.close();
+        try (Connection conn = this.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            pstmt.setString(2, title);
+            pstmt.setString(3, description);
+            pstmt.setString(4, ingredients);
+            pstmt.setString(5, preparationTime);
+            pstmt.setString(6, cookingTime);
+            pstmt.setString(7, preparationMethod);
+            pstmt.setString(8, servings);
+            pstmt.setString(9, cuisine);
+            pstmt.setString(10, category);
+            pstmt.setString(11, tags);
+            pstmt.setString(12, nutrition);
+            pstmt.setString(13, url);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
+    
 }
