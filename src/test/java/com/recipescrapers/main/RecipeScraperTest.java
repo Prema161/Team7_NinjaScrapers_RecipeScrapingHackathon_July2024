@@ -166,7 +166,6 @@ public class RecipeScraperTest {
 			insertRecipesIntoTable("lfvToAddRecipes", lfvToAddRecipes);
 			insertRecipesIntoTable("lfvToAddEliminationRecipes", lfvToAddEliminationRecipes);
 
-
 			if (driver != null) {
 				driver.quit();
 			}
@@ -235,6 +234,7 @@ public class RecipeScraperTest {
 				lfvRecipesToAvoid = Arrays.stream(RecipeConstants.LFV_RECIPES_TO_AVOID).anyMatch(tag.getText().toLowerCase()::contains);	
 			}
 			tags = tags + " " + tag.getText();
+
 		}
 		System.out.println("Recipe Tags : " + tags);
 		//Getting Recipe Description
@@ -276,6 +276,7 @@ public class RecipeScraperTest {
 			foodCategory = "Vegan"; 
 		} 
 		System.out.println("Food Category : " + foodCategory );
+		
 
 
 		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredients,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,foodCategory,tags, nutritionValues, recipeUrl);
@@ -330,6 +331,7 @@ public class RecipeScraperTest {
 
 
 	}
+
 
 
 }

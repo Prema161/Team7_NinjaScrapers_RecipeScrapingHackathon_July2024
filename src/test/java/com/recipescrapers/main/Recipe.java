@@ -2,6 +2,7 @@ package com.recipescrapers.main;
 
 public class Recipe {
 	
+
 	private String recipeID,recipeName,ingredients,recipeDescription,preparationMethod,nutritionValues,recipeUrl,preperationTime,cookingTime,numOfServings,cuisineCategory,foodCategory,tags,ingredientsName;
 	private boolean lfvRecipesToAvoid;
 	
@@ -42,6 +43,8 @@ public class Recipe {
 	public void setTags(String tags) {
 		this.tags = tags;
 	}
+	
+
 	
 	public String getIngredientsName() {
 		return ingredientsName;
@@ -149,7 +152,11 @@ public class Recipe {
 
 	public void setLfvRecipesToAvoid(boolean lfvRecipesToAvoid) {
 		this.lfvRecipesToAvoid = lfvRecipesToAvoid;
-	}
+	
+	
+	
+	
+
 	
 	
 	
