@@ -38,6 +38,7 @@ public class RecipeScraperTest {
 	List<Recipe> lfvAddRecipes = new ArrayList<Recipe>();
 	List<Recipe> lfvToAddRecipes = new ArrayList<Recipe>();
 	List<Recipe> lfvToAddEliminationRecipes = new ArrayList<Recipe>();
+	 String[] tableNames = {"recipes", "LCHFEliminatedRecipe"};
 	
 
 
@@ -62,7 +63,7 @@ public class RecipeScraperTest {
 		db = new DatabaseClass();
 		db.createDatabase();
 		db.connect();
-		db.createTable();
+		//db.createTable();
 		try {
 			driver.get("https://www.tarladalal.com/");
 			driver.manage().window().maximize();
@@ -294,12 +295,28 @@ public class RecipeScraperTest {
 		recipe.setLfvRecipesToAvoid(lfvRecipesToAvoid);
 		
 		//allRecipesList.add(recipe);
- allRecipesList.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredients, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl));
- db.insertData(recipeId, recipeTitle, recipeDescription, ingredients, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl);		
- //Getting Recipe Category (breakfast,lunch,snack,dinner)
- lchfEliminationRecipes.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredients, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl));
+		 for (String tableName : tableNames) {
+             db.createTable(tableName);
+         }
+
+         // Insert data
+         
+		 insertRecipesIntoTable("recipes", allRecipesList);
+	        insertRecipesIntoTable("LCHFEliminatedRecipe", lchfEliminationRecipes);
 
 	}
+	
+	
+	public void insertRecipesIntoTable(String tableName, List<Recipe> recipes) throws SQLException {
+	    for (Recipe recipe : recipes) {
+	        db.insertData(tableName, recipe.getRecipeID(), recipe.getRecipeName(), recipe.getRecipeDescription(),
+	                recipe.getIngredients(), recipe.getPreperationTime(), recipe.getCookingTime(),
+	                recipe.getPreparationMethod(), recipe.getNumOfServings(), recipe.getCuisineCategory(),
+	                recipe.getFoodCategory(), recipe.getTags(), recipe.getNutritionValues(), recipe.getRecipeUrl());
+	    }
+	}
+	
+	
 	
 	public List<Recipe> filterRecipes(List<Recipe> recipeList,String filterString, boolean toBeNotIncluded)
 	{
