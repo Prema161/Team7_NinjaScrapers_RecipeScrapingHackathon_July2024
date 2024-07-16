@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -40,6 +40,8 @@ public class RecipeScraperTest {
 	List<Recipe> lfvToAddEliminationRecipes = new ArrayList<Recipe>();
 	List<Recipe> lfvNutAllergyEliminationRecipes=new ArrayList<Recipe>();
 	List<Recipe> lfvOtherAllergyEliminationRecipes=new ArrayList<Recipe>();
+	List<Recipe> lchfNutAllergyEliminationRecipes=new ArrayList<Recipe>();
+	List<Recipe> lchfOtherAllergyEliminationRecipes=new ArrayList<Recipe>();
 
 
 	@Test
@@ -166,14 +168,21 @@ public class RecipeScraperTest {
 			System.out.println("******PartialVeganLFV RECIPES : " + lfvToAddRecipes);
 			
 			//to eliminate Allergy Nut Recipes from LFV To Eliminate Recipes		
-			lfvNutAllergyEliminationRecipes=filterRecipes(lfvToAddEliminationRecipes,RecipeConstants.LFV_NUT_ALLERGY,true);
+			lfvNutAllergyEliminationRecipes=filterRecipes(lfvAddRecipes,RecipeConstants.LFV_NUT_ALLERGY,true);
 			System.out.println("******lfvEliminateNutAllergy RECIPES : " + lfvNutAllergyEliminationRecipes);
 			
 			//lfv eliminate Allergy Soy,Sesame,Egg-lfvOtherAllergyEliminationRecipes
-			lfvOtherAllergyEliminationRecipes=filterRecipes(lfvToAddEliminationRecipes,RecipeConstants.LFV_OTHER_ALLERGY,true);
+			lfvOtherAllergyEliminationRecipes=filterRecipes(lfvAddRecipes,RecipeConstants.LFV_OTHER_ALLERGY,true);
 			System.out.println("******lfvEliminateNutAllergy RECIPES : " + lfvOtherAllergyEliminationRecipes);
 			
 			
+			//to eliminate Allergy Nut Recipes from LCHF To Eliminate Recipes		
+			lchfNutAllergyEliminationRecipes=filterRecipes(lchfAddRecipes,RecipeConstants.LFV_NUT_ALLERGY,true);
+			System.out.println("******lchfEliminateNutAllergy RECIPES : " + lchfNutAllergyEliminationRecipes);
+			
+			//lfv eliminate Allergy Soy,Sesame,Egg from LCHF to eliminate recipes
+			lchfOtherAllergyEliminationRecipes=filterRecipes(lchfAddRecipes,RecipeConstants.LFV_OTHER_ALLERGY,true);
+			System.out.println("******lchfEliminateNutAllergy RECIPES : " + lchfOtherAllergyEliminationRecipes);
 		
 			if (driver != null) {
 				driver.quit();// closing driver at the end
