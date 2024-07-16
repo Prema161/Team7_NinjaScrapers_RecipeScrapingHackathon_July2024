@@ -217,9 +217,7 @@ public class RecipeScraperTest {
 		}
 		System.out.println("Ingredients Name : " + ingredientsName);
 
-		//Getting Cuisine Category
-		String cuisineCategory = driver.findElement(By.xpath("//div[@class='breadcrumb']/span[7]/a/span")).getText();
-		System.out.println(cuisineCategory);
+		
 
 		//Getting No of Servings
 		String numOfServings = driver.findElement(By.xpath("//span[@id='ctl00_cntrightpanel_lblServes']")).getText();
@@ -235,6 +233,16 @@ public class RecipeScraperTest {
 			tags = tags + "\n" + tag.getText();
 		}
 		System.out.println("Recipe Tags : " + tags);
+		
+		//Getting cuisine category
+		String cuisineCategory = "";
+		String[] cuisineList = RecipeConstants.CUISINE_CATEGORY.split(",");
+		for(String e1 : cuisineList) { 
+		 if((tags.toLowerCase()).contains(e1.toLowerCase())) {
+			 	cuisineCategory = e1 + ", " +cuisineCategory; 
+			}
+		} 
+		System.out.println("Cuisine Category:" + cuisineCategory);
 		//Getting Recipe Description
 		String recipeDescription = driver.findElement(By.id("recipe_description")).getText();
 		System.out.println("Recipe Description : " + recipeDescription );
