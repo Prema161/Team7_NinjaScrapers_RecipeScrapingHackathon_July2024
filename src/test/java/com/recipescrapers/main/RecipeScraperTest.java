@@ -38,8 +38,8 @@ public class RecipeScraperTest {
 	List<Recipe> lfvAddRecipes = new ArrayList<Recipe>();
 	List<Recipe> lfvToAddRecipes = new ArrayList<Recipe>();
 	List<Recipe> lfvToAddEliminationRecipes = new ArrayList<Recipe>();
-	 String[] tableNames = {"recipes", "LCHFEliminatedRecipe"};
-	
+	String[] tableNames = {"recipes", "LCHFEliminatedRecipe","lchfAddRecipes","lfvEliminationRecipes","lfvAddRecipes","lfvToAddRecipes","lfvToAddEliminationRecipes"};
+
 
 
 	@Test
@@ -63,7 +63,12 @@ public class RecipeScraperTest {
 		db = new DatabaseClass();
 		db.createDatabase();
 		db.connect();
-		//db.createTable();
+		for (String tableName : tableNames) {
+			db.createTable(tableName);
+		}
+
+
+
 		try {
 			driver.get("https://www.tarladalal.com/");
 			driver.manage().window().maximize();
@@ -95,8 +100,6 @@ public class RecipeScraperTest {
 					if (j > 1) {
 						driver.findElement(By.xpath("//div[@style='text-align:right;padding-bottom:15px;'][1]/a[contains(text()," + j + ")]")).click();
 					}
-					// Wait for recipe links to be present
-					//List<WebElement> recipeLinks = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//span[@class='rcc_recipename']/a")));
 					// Getting All the Recipe Links
 					List<WebElement> recipeLinks = null;
 					try {
@@ -130,51 +133,49 @@ public class RecipeScraperTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			
-			lchfEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LCHF_TO_ELIMINATE, true);
-			
-					
-			lchfAddRecipes = filterRecipes(lchfEliminationRecipes, RecipeConstants.LCHF_ADD, false);
-				
-			System.out.println("******lchfElimination Recipe List : " + lchfEliminationRecipes);
-			System.out.println("*****lchfAdd Recipe List : " + lchfAddRecipes); 
 
-			/*
-			 * List<Recipe> veganRecipes = allRecipesList.stream() .filter(recipe ->
-			 * "vegan".equalsIgnoreCase(recipe.getFoodCategory()))
-			 * .collect(Collectors.toList());
-			 */
-			lfvEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE, true);
-			
-			
-			//System.out.println("******VEGAN RECIPES : " + veganRecipes);
-			System.out.println("******lfvElimination RECIPES : " + lfvEliminationRecipes);
-			//we get fully vegan recipes here 
+			lchfEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LCHF_TO_ELIMINATE, true);					
+			lchfAddRecipes = filterRecipes(lchfEliminationRecipes, RecipeConstants.LCHF_ADD, false);			
+			lfvEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE, true);		
+
+			 
 			lfvAddRecipes = filterRecipes(lfvEliminationRecipes, RecipeConstants.LFV_ADD, false);
 			//we are filtering the recipes from lfvAddRecipes to check if it contains !isLfvRecipesToAvoid(it does not contain recipes to avoid), then only those recipes are added to the same list
 			lfvAddRecipes = lfvAddRecipes.stream().filter(rec->
-				!rec.isLfvRecipesToAvoid()).collect(Collectors.toList());
-			
-			System.out.println("******lfvAdd(Fully VeganLFV) RECIPES : " + lfvAddRecipes);
-			
-			//To get partial vegan recipes including LFV to Add recipes, we are adding lfv to add elimination recipes(butter included)and lfv to add
-			lfvToAddEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE_NFV, true);//here we get recipe list after elimination inlcuding butter
-			System.out.println("******lfvToAddEliminationRecipes RECIPES : " + lfvToAddEliminationRecipes);
-			lfvToAddRecipes = filterRecipes(lfvToAddEliminationRecipes, RecipeConstants.LFV_TO_ADD, false);//filtering recipes with butter with add ingredients
-			System.out.println("******lfvToAddRecipes RECIPES : " + lfvToAddRecipes);
-			lfvToAddRecipes.addAll(lfvAddRecipes);//adding "lfv to add recipes" with "lfv add recipes" to get partial vegan LFV recipes
-			System.out.println("******PartialVeganLFV RECIPES : " + lfvToAddRecipes);
+			!rec.isLfvRecipesToAvoid()).collect(Collectors.toList());
 
-			
-		
+
+			lfvToAddEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE_NFV, true);//here we get recipe list after elimination inlcuding butter
+			lfvToAddRecipes = filterRecipes(lfvToAddEliminationRecipes, RecipeConstants.LFV_TO_ADD, false);//filtering recipes with butter with add ingredients
+			lfvToAddRecipes.addAll(lfvAddRecipes);//adding "lfv to add recipes" with "lfv add recipes" to get partial vegan LFV recipes
+
+
+			System.out.println("******lchfElimination Recipe List : " + lchfEliminationRecipes.size());
+			System.out.println("*****lchfAdd Recipe List : " + lchfAddRecipes.size());
+			System.out.println("******lfvElimination RECIPES : " + lfvEliminationRecipes.size());
+			System.out.println("******lfvAdd(Fully VeganLFV) RECIPES : " + lfvAddRecipes.size());
+			System.out.println("******lfvToAddEliminationRecipes RECIPES : " + lfvToAddEliminationRecipes.size());
+			System.out.println("******PartialVeganLFV RECIPES : " + lfvToAddRecipes.size());
+
+
+			insertRecipesIntoTable("recipes", allRecipesList);
+			insertRecipesIntoTable("LCHFEliminatedRecipe", lchfEliminationRecipes);
+			insertRecipesIntoTable("lchfAddRecipes", lchfAddRecipes);
+			insertRecipesIntoTable("lfvEliminationRecipes", lfvEliminationRecipes);
+			insertRecipesIntoTable("lfvAddRecipes", lfvAddRecipes);
+			insertRecipesIntoTable("lfvToAddRecipes", lfvToAddRecipes);
+			insertRecipesIntoTable("lfvToAddEliminationRecipes", lfvToAddEliminationRecipes);
+
+
 			if (driver != null) {
-				driver.quit();// closing driver at the end
+				driver.quit();
 			}
 		}
 	}
 
+
 	public void recipeDataScraper(WebDriver driver) throws JsonParseException, JsonMappingException, IOException, SQLException {
-		
+
 		boolean lfvRecipesToAvoid = false ;
 
 		//extracting recipe id from the current url
@@ -191,7 +192,7 @@ public class RecipeScraperTest {
 		String recipeTitle = recipeTitleElement.getText();
 		//scraping "LFV recipes to avoid" by filtering the constants like (microwave,fried,...)from the recipe titile, if it finds any match it returns true.
 		lfvRecipesToAvoid = Arrays.stream(RecipeConstants.LFV_RECIPES_TO_AVOID).anyMatch(recipeTitle.toLowerCase()::contains);
-		
+
 		System.out.println("Recipe Name : " + recipeTitle);
 		//getting preparation time
 		String preperationTime = driver.findElement(By.xpath("//time[@itemprop='prepTime']")).getText();
@@ -229,7 +230,7 @@ public class RecipeScraperTest {
 		List<WebElement> tagsLoc = driver.findElements(By.xpath("//div[@id='recipe_tags']/a"));
 		String tags = "";
 		for (WebElement tag : tagsLoc) {
-	//scraping "LFV recipes to avoid" by filtering the constants like (microwave,fried,...)from each recipe tag, if it finds any match it returns true and stops checking the condition.
+			//scraping "LFV recipes to avoid" by filtering the constants like (microwave,fried,...)from each recipe tag, if it finds any match it returns true and stops checking the condition.
 			if(!lfvRecipesToAvoid) {
 				lfvRecipesToAvoid = Arrays.stream(RecipeConstants.LFV_RECIPES_TO_AVOID).anyMatch(tag.getText().toLowerCase()::contains);	
 			}
@@ -275,7 +276,7 @@ public class RecipeScraperTest {
 			foodCategory = "Vegan"; 
 		} 
 		System.out.println("Food Category : " + foodCategory );
-		
+
 
 		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredients,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,foodCategory,tags, nutritionValues, recipeUrl);
 		recipe.setRecipeID(recipeId);
@@ -293,50 +294,42 @@ public class RecipeScraperTest {
 		recipe.setRecipeUrl(recipeUrl);
 		recipe.setFoodCategory(foodCategory);
 		recipe.setLfvRecipesToAvoid(lfvRecipesToAvoid);
-		
-		//allRecipesList.add(recipe);
-		 for (String tableName : tableNames) {
-             db.createTable(tableName);
-         }
 
-         // Insert data
-         
-		 insertRecipesIntoTable("recipes", allRecipesList);
-	        insertRecipesIntoTable("LCHFEliminatedRecipe", lchfEliminationRecipes);
+		allRecipesList.add(recipe);	
 
-	}
-	
-	
+			}
+
+
 	public void insertRecipesIntoTable(String tableName, List<Recipe> recipes) throws SQLException {
-	    for (Recipe recipe : recipes) {
-	        db.insertData(tableName, recipe.getRecipeID(), recipe.getRecipeName(), recipe.getRecipeDescription(),
-	                recipe.getIngredients(), recipe.getPreperationTime(), recipe.getCookingTime(),
-	                recipe.getPreparationMethod(), recipe.getNumOfServings(), recipe.getCuisineCategory(),
-	                recipe.getFoodCategory(), recipe.getTags(), recipe.getNutritionValues(), recipe.getRecipeUrl());
-	    }
+		for (Recipe recipe : recipes) {
+			db.insertData(tableName, recipe.getRecipeID(), recipe.getRecipeName(), recipe.getRecipeDescription(),
+					recipe.getIngredients(), recipe.getPreperationTime(), recipe.getCookingTime(),
+					recipe.getPreparationMethod(), recipe.getNumOfServings(), recipe.getCuisineCategory(),
+					recipe.getFoodCategory(), recipe.getTags(), recipe.getNutritionValues(), recipe.getRecipeUrl());
+		}
 	}
-	
-	
-	
+
+
 	public List<Recipe> filterRecipes(List<Recipe> recipeList,String filterString, boolean toBeNotIncluded)
 	{
 		List<Recipe> filteredRecipes = null;
 		//using java streams(lambda expression) for filtering data
 		//using streams to check if there is any match with the ingredients in array list and the string
 		if(toBeNotIncluded) {
-		filteredRecipes	= recipeList.stream().filter(rec ->
-		!Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
-				.collect(Collectors.toList());
+			filteredRecipes	= recipeList.stream().filter(rec ->
+			!Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
+					.collect(Collectors.toList());
 		}
 		else {
-		filteredRecipes = recipeList.stream().filter(rec ->
-		Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
-				.collect(Collectors.toList());
+			filteredRecipes = recipeList.stream().filter(rec ->
+			Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
+					.collect(Collectors.toList());
 		}
+		System.out.println("Filtered Recipes: " + filteredRecipes.size() + " for filter: " + filterString);
 		return filteredRecipes;
-		
-		
+
+
 	}
 
-		
+
 }

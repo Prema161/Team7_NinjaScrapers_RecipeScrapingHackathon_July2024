@@ -18,7 +18,7 @@ public class DatabaseClass {
    
 	
     public Connection connect() throws SQLException {
-        conn = DriverManager.getConnection(base_url , username, password);
+        conn = DriverManager.getConnection(base_url + DB_name, username, password);
         return conn;
     }
 
@@ -36,7 +36,7 @@ public class DatabaseClass {
     public void createTable(String tablename) throws SQLException {
        
         String createTableSQL = "CREATE TABLE IF NOT EXISTS "+tablename+" (\n"
-        		+ "                   id text,\n"
+        		+ "                   id text PRIMARY KEY,\n"
         		+ "                    title text NOT NULL,\n"
         		+ "                    description text,\n"
         		+ "                    ingredients text,\n"
@@ -60,33 +60,7 @@ public class DatabaseClass {
     }
     
    
-    public void LCHFToAdd() {
-    	
-    }
-    
-    public void LCHFAllergy() {
-    	
-    }
-    
-    public void LFVElimination() {
-    	
-    }
-    
-    public void LFVfullyVegan() {
-    	
-    }
-    
-    public void LFVPartiallyVegan() {
-    	
-    }
-    
-    public void LFVOptionalRecipes() {
-    	
-    }
-    
-    public void Allergies() {
-    	
-    }
+  
     public void insertData(String tablename,String id, String title, String description, String ingredients, String preparationTime,
             String cookingTime, String preparationMethod, String servings, String cuisine, String category, String tags,
             String nutrition, String url) {
@@ -111,6 +85,8 @@ public class DatabaseClass {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
     
+ 
+    }
+
 }
