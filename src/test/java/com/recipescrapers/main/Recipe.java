@@ -20,6 +20,7 @@ public class Recipe {
 	        this.numOfServings = numOfServings;
 	        this.cuisineCategory = cuisineCategory;
 	        this.foodCategory = foodCategory;
+	        //RecipeCategory
 	        this.recipeCategory = recipeCategory;
 	        this.tags = tags;
 	        this.nutritionValues = nutritionValues;
