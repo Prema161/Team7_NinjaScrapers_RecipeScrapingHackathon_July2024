@@ -59,10 +59,10 @@ public class RecipeScraperTest {
 		driver = new ChromeDriver(options);
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-		db = new DatabaseClass();
-		db.createDatabase();
-		db.connect();
-		db.createTable();
+		//db = new DatabaseClass();
+	//	db.createDatabase();
+		//db.connect();
+	//	db.createTable();
 		try {
 			driver.get("https://www.tarladalal.com/");
 			driver.manage().window().maximize();
@@ -275,8 +275,21 @@ public class RecipeScraperTest {
 		} 
 		System.out.println("Food Category : " + foodCategory );
 		
+		// Getting recipe Category
+		String combinedText1 = tags.toLowerCase();
+		String[] recipeCategory = RecipeConstants.recipeCategoryOptions;
+		String recipeCategoryOptions = null;
+		for (String rc : recipeCategory)
+        {
+			if (combinedText1.contains(rc))
+			  {
+				recipeCategoryOptions = rc;
+				System.out.println("RecipeCategory:" + recipeCategoryOptions);
+				break;
+			  }
+		}
 
-		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,foodCategory,tags, nutritionValues, recipeUrl);
+		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,recipeCategoryOptions, foodCategory, tags, nutritionValues, recipeUrl);
 		recipe.setRecipeID(recipeId);
 		recipe.setRecipeName(recipeTitle);
 		recipe.setIngredientsName(ingredientsName);
@@ -289,13 +302,14 @@ public class RecipeScraperTest {
 		recipe.setNutritionValues(nutritionValues);
 		recipe.setRecipeUrl(recipeUrl);
 		recipe.setFoodCategory(foodCategory);
+		recipe.setRecipeCategory(recipeCategoryOptions);
 		recipe.setLfvRecipesToAvoid(lfvRecipesToAvoid);
 		
 		//allRecipesList.add(recipe);
- allRecipesList.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl));
+ allRecipesList.add(new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, recipeCategoryOptions, foodCategory, tags, nutritionValues, recipeUrl));
 		//Getting Recipe Category (breakfast,lunch,snack,dinner)
 
-db.insertData(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl);
+//db.insertData(recipeId, recipeTitle, recipeDescription, ingredientsName, preperationTime, cookingTime, preparationMethod, numOfServings, cuisineCategory, foodCategory, tags, nutritionValues, recipeUrl);
 	}
 	
 	public List<Recipe> filterRecipes(List<Recipe> recipeList,String filterString, boolean toBeNotIncluded)
