@@ -274,19 +274,17 @@ public class RecipeScraperTest {
 			foodCategory = "Vegan"; 
 		} 
 		System.out.println("Food Category : " + foodCategory );
-		
+
 		// Getting recipe Category
 		String combinedText1 = tags.toLowerCase();
 		String[] recipeCategory = RecipeConstants.recipeCategoryOptions;
 		String recipeCategoryOptions = null;
-		for (String rc : recipeCategory)
-        {
-			if (combinedText1.contains(rc))
-			  {
+		for (String rc : recipeCategory) {
+			if (combinedText1.contains(rc)) {
 				recipeCategoryOptions = rc;
 				System.out.println("RecipeCategory:" + recipeCategoryOptions);
 				break;
-			  }
+			}
 		}
 
 		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredientsName,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory,recipeCategoryOptions, foodCategory, tags, nutritionValues, recipeUrl);
