@@ -2,13 +2,13 @@ package com.recipescrapers.main;
 
 public class Recipe {
 	
-	private String recipeID,recipeName,ingredients,recipeDescription,preparationMethod,nutritionValues,recipeUrl,preperationTime,cookingTime,numOfServings,cuisineCategory,foodCategory,tags,ingredientsName;
+	private String recipeID,recipeName,ingredients,recipeDescription,preparationMethod,nutritionValues,recipeUrl,preperationTime,cookingTime,numOfServings,cuisineCategory,recipeCategory,foodCategory,tags,ingredientsName;
 	private boolean lfvRecipesToAvoid;
 	
 	//constructor
 	  public Recipe(String recipeId, String recipeTitle, String recipeDescription, String ingredientsName,
 	            String preperationTime, String cookingTime, String preparationMethod, String numOfServings,
-	            String cuisineCategory, String foodCategory, String tags, String nutritionValues, String recipeUrl) {
+	            String cuisineCategory,String recipeCategory, String foodCategory, String tags, String nutritionValues, String recipeUrl) {
 	        this.recipeID = recipeId;
 	        this.recipeName = recipeTitle;
 	        this.recipeDescription = recipeDescription;
@@ -18,13 +18,20 @@ public class Recipe {
 	        this.preparationMethod = preparationMethod;
 	        this.numOfServings = numOfServings;
 	        this.cuisineCategory = cuisineCategory;
+	        this.recipeCategory=recipeCategory;
 	        this.foodCategory = foodCategory;
 	        this.tags = tags;
 	        this.nutritionValues = nutritionValues;
 	        this.recipeUrl = recipeUrl;
 	    }
 	
-	
+	  public String getRecipeCategory() {
+			return recipeCategory;
+		}
+
+		public void setRecipeCategory(String recipeCategory) {
+			this.recipeCategory = recipeCategory;
+		}
 	
 	
 	public String getCuisineCategory() {
