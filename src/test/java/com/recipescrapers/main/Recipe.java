@@ -3,13 +3,14 @@ package com.recipescrapers.main;
 public class Recipe {
 	
 
-	private String recipeID,recipeName,ingredients,recipeDescription,preparationMethod,nutritionValues,recipeUrl,preperationTime,cookingTime,numOfServings,cuisineCategory,foodCategory,tags,ingredientsName;
+	private String recipeID,recipeName,ingredients,recipeDescription,preparationMethod,nutritionValues,recipeUrl,preperationTime,cookingTime,numOfServings,cuisineCategory,foodCategory,recipeCategory,tags,ingredientsName;
 	private boolean lfvRecipesToAvoid;
+	private boolean isLchfRecipesToAvoid;
 	
 	//constructor
 	  public Recipe(String recipeId, String recipeTitle, String recipeDescription, String ingredientsName,
 	            String preperationTime, String cookingTime, String preparationMethod, String numOfServings,
-	            String cuisineCategory, String foodCategory, String tags, String nutritionValues, String recipeUrl) {
+	            String cuisineCategory, String foodCategory,String recipeCategory ,String tags, String nutritionValues, String recipeUrl) {
 	        this.recipeID = recipeId;
 	        this.recipeName = recipeTitle;
 	        this.recipeDescription = recipeDescription;
@@ -20,6 +21,7 @@ public class Recipe {
 	        this.numOfServings = numOfServings;
 	        this.cuisineCategory = cuisineCategory;
 	        this.foodCategory = foodCategory;
+	        this.recipeCategory = recipeCategory;
 	        this.tags = tags;
 	        this.nutritionValues = nutritionValues;
 	        this.recipeUrl = recipeUrl;
@@ -142,6 +144,14 @@ public class Recipe {
 		this.ingredients = ingredients;
 	}
 	
+	public String getRecipeCategory() {
+		return recipeCategory;
+	}
+
+	public void setRecipeCategory(String recipeCategory) {
+		this.recipeCategory = recipeCategory;
+	}
+
 	public String toString() {
 		return "ReceipeName :"+ recipeName + "Ingredenients :" + ingredients;
 	}
@@ -154,14 +164,13 @@ public class Recipe {
 		this.lfvRecipesToAvoid = lfvRecipesToAvoid;
 	
 	
-	
-	
+	}
+	public boolean isLchfRecipesToAvoid() {
+		return isLchfRecipesToAvoid;
+	}
 
-	
-	
-	
-	
+	public void setLchfRecipesToAvoid(boolean isLchfRecipesToAvoid) {
+		this.isLchfRecipesToAvoid = isLchfRecipesToAvoid;
+	}
 
-	
-	
 }
