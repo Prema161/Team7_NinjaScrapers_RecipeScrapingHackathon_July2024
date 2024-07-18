@@ -1,3 +1,4 @@
+
 package com.recipescrapers.main;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -16,15 +18,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-
 
 
 public class RecipeScraperTest {
@@ -41,14 +40,6 @@ public class RecipeScraperTest {
 	List<Recipe> lfvToAddEliminationRecipes = new ArrayList<Recipe>();
 	List<Recipe> lfvNutAllergyEliminationRecipes=new ArrayList<Recipe>();
 	List<Recipe> lfvOtherAllergyEliminationRecipes=new ArrayList<Recipe>();
-	List<Recipe> lchfNutAllergyEliminationRecipes=new ArrayList<Recipe>();
-	List<Recipe> lchfOtherAllergyEliminationRecipes=new ArrayList<Recipe>();
-	List<Recipe> lfvOptionalRecipes=new ArrayList<Recipe>();
-
-	private static final Logger logger = LoggerFactory.getLogger(RecipeScraperTest.class);
-
-	String[] tableNames = {"recipes", "LCHFEliminatedRecipe","lchfAddRecipes","lfvEliminationRecipes","lfvAddRecipes","lfvToAddRecipes","lfvnutallergy","lfvotherallergy","lchfnutallergy","lchfotherallergy","lfvOptionalRecipes"};
-
 
 
 	@Test
@@ -65,24 +56,14 @@ public class RecipeScraperTest {
 		options.addArguments("--disable-popup-blocking");
 		options.addArguments("--disable-notifications");
 		options.addArguments("--disable-extensions");
-		options.addArguments("enable-automation");
-		options.addArguments("--no-sandbox");
-		options.addArguments("--dns-prefetch-disable");
-		options.addArguments("--disable-gpu");
-		options.addArguments("--disable-dev-shm-usage");
-		options.addArguments("--disable-software-rasterizer");
-		options.addArguments("--disable-features=SharedStorageAPI");
 
 		driver = new ChromeDriver(options);
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
 		db = new DatabaseClass();
-		db.createDatabase();
+		//db.createDatabase();
 		db.connect();
-		for (String tableName : tableNames) {
-			db.createTable(tableName);
-		}
-
+		db.createTable();
 		try {
 			driver.get("https://www.tarladalal.com/");
 			driver.manage().window().maximize();
@@ -114,12 +95,14 @@ public class RecipeScraperTest {
 					if (j > 1) {
 						driver.findElement(By.xpath("//div[@style='text-align:right;padding-bottom:15px;'][1]/a[contains(text()," + j + ")]")).click();
 					}
+					// Wait for recipe links to be present
+					//List<WebElement> recipeLinks = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//span[@class='rcc_recipename']/a")));
 					// Getting All the Recipe Links
 					List<WebElement> recipeLinks = null;
 					try {
 						recipeLinks = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//span[@class='rcc_recipename']/a")));
 					} catch (Exception e) {
-						logger.info("TimeoutException occurred while waiting for recipe links: " + e.getMessage());
+						System.out.println("TimeoutException occurred while waiting for recipe links: " + e.getMessage());
 						continue; // Skip to the next iteration if exception occurs
 					}
 					// Open each recipe link in a new tab
@@ -136,7 +119,7 @@ public class RecipeScraperTest {
 							try {
 								recipeDataScraper(driver);
 							} catch (Exception e) {
-								logger.info("Error scraping data from tab: " + tab);
+								System.out.println("Error scraping data from tab: " + tab);
 							}
 							driver.close(); // Close the current tab
 						}
@@ -147,158 +130,142 @@ public class RecipeScraperTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-
-			lchfEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LCHF_TO_ELIMINATE, true);					
+			
+			lchfEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LCHF_TO_ELIMINATE, true);
+			
+					
 			lchfAddRecipes = filterRecipes(lchfEliminationRecipes, RecipeConstants.LCHF_ADD, false);
-			//getting the recipes that doesnot contain processed food(LCHF recipes to avoid)
-			lchfAddRecipes = lchfAddRecipes.stream().filter(rec->
-			!rec.isLchfRecipesToAvoid()).collect(Collectors.toList());
+				
+			System.out.println("******lchfElimination Recipe List : " + lchfEliminationRecipes);
+			System.out.println("*****lchfAdd Recipe List : " + lchfAddRecipes); 
 
-			lfvEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE, true);		
+			/*
+			 * List<Recipe> veganRecipes = allRecipesList.stream() .filter(recipe ->
+			 * "vegan".equalsIgnoreCase(recipe.getFoodCategory()))
+			 * .collect(Collectors.toList());
+			 */
+			lfvEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE, true);
+			
+			
+			//System.out.println("******VEGAN RECIPES : " + veganRecipes);
+			System.out.println("******lfvElimination RECIPES : " + lfvEliminationRecipes);
+			//we get fully vegan recipes here 
 			lfvAddRecipes = filterRecipes(lfvEliminationRecipes, RecipeConstants.LFV_ADD, false);
 			//we are filtering the recipes from lfvAddRecipes to check if it contains !isLfvRecipesToAvoid(it does not contain recipes to avoid), then only those recipes are added to the same list
 			lfvAddRecipes = lfvAddRecipes.stream().filter(rec->
-			!rec.isLfvRecipesToAvoid()).collect(Collectors.toList());
-
+				!rec.isLfvRecipesToAvoid()).collect(Collectors.toList());
+			
+			System.out.println("******lfvAdd(Fully VeganLFV) RECIPES : " + lfvAddRecipes);
+			
+			//To get partial vegan recipes including LFV to Add recipes, we are adding lfv to add elimination recipes(butter included)and lfv to add
 			lfvToAddEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE_NFV, true);//here we get recipe list after elimination inlcuding butter
+			System.out.println("******lfvToAddEliminationRecipes RECIPES : " + lfvToAddEliminationRecipes);
 			lfvToAddRecipes = filterRecipes(lfvToAddEliminationRecipes, RecipeConstants.LFV_TO_ADD, false);//filtering recipes with butter with add ingredients
+			System.out.println("******lfvToAddRecipes RECIPES : " + lfvToAddRecipes);
 			lfvToAddRecipes.addAll(lfvAddRecipes);//adding "lfv to add recipes" with "lfv add recipes" to get partial vegan LFV recipes
-			//// getting the recipes that has LFV optional recipes
-			// getting recipe the list that contains herbal drinks,tea,coffee without sugar
-			lfvOptionalRecipes = allRecipesList.stream().filter(rec ->
-			Arrays.stream(RecipeConstants.LFV_OPTONAL_RECIPES_OPTIONS.toLowerCase().split(",")).anyMatch(rec.getRecipeName().toLowerCase()::contains))
-					.collect(Collectors.toList());	
-			lfvOptionalRecipes = filterRecipes(lfvOptionalRecipes, RecipeConstants.LFV_OPTONAL_RECIPES__TO_AVOID, true);//milk,sugar is excluded from ingredients
-			lfvOptionalRecipes =  lfvOptionalRecipes.stream().filter(rec ->
-			!Arrays.stream(RecipeConstants.LFV_OPTONAL_RECIPES__TO_ELIMINATE.toLowerCase().split(",")).anyMatch(rec.getRecipeName().toLowerCase()::contains))
-					.collect(Collectors.toList());
-
+			System.out.println("******PartialVeganLFV RECIPES : " + lfvToAddRecipes);
+			
 			//to eliminate Allergy Nut Recipes from LFV To Eliminate Recipes		
-			lfvNutAllergyEliminationRecipes=filterRecipes(lfvAddRecipes,RecipeConstants.LFV_NUT_ALLERGY,true);
-			logger.info("******lfvEliminateNutAllergy RECIPES : " + lfvNutAllergyEliminationRecipes);
-
+			lfvNutAllergyEliminationRecipes=filterRecipes(lfvToAddEliminationRecipes,RecipeConstants.LFV_NUT_ALLERGY,true);
+			System.out.println("******lfvEliminateNutAllergy RECIPES : " + lfvNutAllergyEliminationRecipes);
+			
 			//lfv eliminate Allergy Soy,Sesame,Egg-lfvOtherAllergyEliminationRecipes
-			lfvOtherAllergyEliminationRecipes=filterRecipes(lfvAddRecipes,RecipeConstants.LFV_OTHER_ALLERGY,true);
-			logger.info("******lfvEliminateNutAllergy RECIPES : " + lfvOtherAllergyEliminationRecipes);
-
-
-			//to eliminate Allergy Nut Recipes from LCHF To Eliminate Recipes		
-			lchfNutAllergyEliminationRecipes=filterRecipes(lchfAddRecipes,RecipeConstants.LFV_NUT_ALLERGY,true);
-			logger.info("******lchfEliminateNutAllergy RECIPES : " + lchfNutAllergyEliminationRecipes);
-
-			//lfv eliminate Allergy Soy,Sesame,Egg from LCHF to eliminate recipes
-			lchfOtherAllergyEliminationRecipes=filterRecipes(lchfAddRecipes,RecipeConstants.LFV_OTHER_ALLERGY,true);
-			logger.info("******lchfEliminateNutAllergy RECIPES : " + lchfOtherAllergyEliminationRecipes);
-
-			logger.info("******lchfElimination Recipe List : " + lchfEliminationRecipes.size());
-			logger.info("*****lchfAdd Recipe List : " + lchfAddRecipes.size());
-			logger.info("******lfvElimination RECIPES : " + lfvEliminationRecipes.size());
-			logger.info("******lfvAdd(Fully VeganLFV) RECIPES : " + lfvAddRecipes.size());
-			//logger.info("******lfvToAddEliminationRecipes RECIPES : " + lfvToAddEliminationRecipes.size());
-			logger.info("******PartialVeganLFV RECIPES : " + lfvToAddRecipes.size());
-
-			insertRecipesIntoTable("recipes", allRecipesList);
-			insertRecipesIntoTable("LCHFEliminatedRecipe", lchfEliminationRecipes);
-			insertRecipesIntoTable("lchfAddRecipes", lchfAddRecipes);
-			insertRecipesIntoTable("lfvEliminationRecipes", lfvEliminationRecipes);
-			insertRecipesIntoTable("lfvAddRecipes", lfvAddRecipes);
-			insertRecipesIntoTable("lfvToAddRecipes", lfvToAddRecipes);
-			insertRecipesIntoTable("lfvnutallergy", lfvNutAllergyEliminationRecipes);
-			insertRecipesIntoTable("lfvotherallergy", lfvOtherAllergyEliminationRecipes);
-			insertRecipesIntoTable("lchfnutallergy", lchfNutAllergyEliminationRecipes);
-			insertRecipesIntoTable("lchfotherallergy", lchfOtherAllergyEliminationRecipes);
-			insertRecipesIntoTable("lfvOptionalRecipes", lfvOptionalRecipes);
-
+			lfvOtherAllergyEliminationRecipes=filterRecipes(lfvToAddEliminationRecipes,RecipeConstants.LFV_OTHER_ALLERGY,true);
+			System.out.println("******lfvEliminateNutAllergy RECIPES : " + lfvOtherAllergyEliminationRecipes);
+			
+			
+		
 			if (driver != null) {
-				driver.quit();
+				driver.quit();// closing driver at the end
 			}
 		}
 	}
 
 	public void recipeDataScraper(WebDriver driver) throws JsonParseException, JsonMappingException, IOException, SQLException {
-
+		
 		boolean lfvRecipesToAvoid = false ;
-		boolean lchfRecipesToAvoid = false;
+
 		//extracting recipe id from the current url
 		String recipeUrl = driver.getCurrentUrl();
 		//Split the URL by hyphen and 'r' to get the parts
 		String[] parts = recipeUrl.split("-");
 		// The recipe ID is the last part before 'r'
 		String recipeId = parts[parts.length - 1].replace("r", "");
-		logger.info("*************************************************");
-		logger.info("Recipe Id : " + recipeId);
+		System.out.println("*************************************************");
+		System.out.println("Recipe Id : " + recipeId);
 
 		//Getting the recipe name
 		WebElement recipeTitleElement = driver.findElement(By.xpath("//div[@id='recipehead']//span//span"));
 		String recipeTitle = recipeTitleElement.getText();
 		//scraping "LFV recipes to avoid" by filtering the constants like (microwave,fried,...)from the recipe titile, if it finds any match it returns true.
 		lfvRecipesToAvoid = Arrays.stream(RecipeConstants.LFV_RECIPES_TO_AVOID).anyMatch(recipeTitle.toLowerCase()::contains);
-
-		logger.info("Recipe Name : " + recipeTitle);
+		
+		System.out.println("Recipe Name : " + recipeTitle);
 		//getting preparation time
 		String preperationTime = driver.findElement(By.xpath("//time[@itemprop='prepTime']")).getText();
-		logger.info("Preparation Time : " + preperationTime);
+		System.out.println("Preparation Time : " + preperationTime);
 		//getting cooking time
 		String cookingTime = driver.findElement(By.xpath("//time[@itemprop='cookTime']")).getText();
-		logger.info("Cooking Time : " + cookingTime);
+		System.out.println("Cooking Time : " + cookingTime);
 		// Getting Ingredients
 		List<WebElement> ingredintsLoc = driver
 				.findElements(By.xpath("//span[@itemprop='recipeIngredient']"));
+
 		String ingredients = "";
 		for (WebElement e1 : ingredintsLoc) {
-			if(!lchfRecipesToAvoid) {
-				lchfRecipesToAvoid = e1.getText().toLowerCase().contains("processed");	
-			}
-			ingredients = ingredients + " " + e1.getText();
+			ingredients = ingredients + "\n" + e1.getText();
 		}
-		logger.info("Ingredients : " + ingredients);
+		System.out.println("Ingredients : " + ingredients);
 
 		List<WebElement> ingredintsNameLoc = driver
 				.findElements(By.xpath("//span[@itemprop='recipeIngredient']/a/span"));
+
 		String ingredientsName = "";
 		for (WebElement e1 : ingredintsNameLoc) {
 			ingredientsName = ingredientsName + "\n" + e1.getText();
 		}
-		logger.info("Ingredients Name : " + ingredientsName);
+		System.out.println("Ingredients Name : " + ingredientsName);
+
+		//Getting Cuisine Category
+		String cuisineCategory = driver.findElement(By.xpath("//div[@class='breadcrumb']/span[7]/a/span")).getText();
+		System.out.println(cuisineCategory);
 
 		//Getting No of Servings
 		String numOfServings = driver.findElement(By.xpath("//span[@id='ctl00_cntrightpanel_lblServes']")).getText();
-		logger.info("No of Servings : "+numOfServings);
-
+		System.out.println("No of Servings : "+numOfServings);
 		//Getting tags
 		List<WebElement> tagsLoc = driver.findElements(By.xpath("//div[@id='recipe_tags']/a"));
 		String tags = "";
 		for (WebElement tag : tagsLoc) {
-			//scraping "LFV recipes to avoid" by filtering the constants like (microwave,fried,...)from each recipe tag, if it finds any match it returns true and stops checking the condition.
+	//scraping "LFV recipes to avoid" by filtering the constants like (microwave,fried,...)from each recipe tag, if it finds any match it returns true and stops checking the condition.
 			if(!lfvRecipesToAvoid) {
 				lfvRecipesToAvoid = Arrays.stream(RecipeConstants.LFV_RECIPES_TO_AVOID).anyMatch(tag.getText().toLowerCase()::contains);	
 			}
-			tags = tags + " " + tag.getText();
+			tags = tags + "\n" + tag.getText();
 		}
-		logger.info("Recipe Tags : " + tags);
-
+		System.out.println("Recipe Tags : " + tags);
 		//Getting Recipe Description
 		String recipeDescription = driver.findElement(By.id("recipe_description")).getText();
-		logger.info("Recipe Description : " + recipeDescription );
+		System.out.println("Recipe Description : " + recipeDescription );
 
 		//Getting Preperation Method
 		List<WebElement> prepMethod = driver.findElements(By.xpath("//*[@id='recipe_small_steps']/span[1]//span[@itemprop='text']"));
 		String preparationMethod = "";
 		for (WebElement method : prepMethod) {
-			preparationMethod = preparationMethod + " " + method.getText();
+			preparationMethod = preparationMethod + "\n" + method.getText();
 		}
-		logger.info("Preparation Method : " + preparationMethod );
+		System.out.println("Preparation Method : " + preparationMethod );
 
 		//Getting Nutrition values
 		List<WebElement> nutritionLoc = driver.findElements(By.xpath("//*[@id='rcpnutrients']//tr"));
 		String nutritionValues = "";
 		for (WebElement nutrition : nutritionLoc) {
-			nutritionValues = nutritionValues + " " + nutrition.getText();
+			nutritionValues = nutritionValues + "\n" + nutrition.getText();
 		}
-		logger.info("Nutrition Values : " + nutritionValues );
+		System.out.println("Nutrition Values : " + nutritionValues );
 
 		//Recipe Url
-		logger.info("Recipe Url: " + recipeUrl);
+		System.out.println("Recipe Url: " + recipeUrl);
 
 		// Determining the food category based on the tags and ingredients
 		String foodCategory = "Vegetarian";//by default food category is vegetarian
@@ -315,30 +282,10 @@ public class RecipeScraperTest {
 				){ 
 			foodCategory = "Vegan"; 
 		} 
-		logger.info("Food Category : " + foodCategory );
+		System.out.println("Food Category : " + foodCategory );
+		
 
-		//Getting Cuisine Category
-		String cuisineCategory = "";
-		String[] cuisineList = RecipeConstants.CUISIN_CATEGORY.split(",");
-		for(String e1 : cuisineList) { 
-			if((tags.toLowerCase()).contains(e1.toLowerCase())) {
-				cuisineCategory = e1 + ", " +cuisineCategory; 
-			}
-		} 
-		logger.info("Cuisine Category:" + cuisineCategory); 
-
-		//Getting Recipe Category
-		String recipeCategory = "";
-		for(String recipeCategoryOption : RecipeConstants.RECIPE_CATEGORY_OPTIONS) {
-			if(tags.toLowerCase().contains(recipeCategoryOption.toLowerCase()))
-			{
-				recipeCategory = recipeCategoryOption ;
-				break;
-			}
-		}
-		logger.info("Recipe Category:" + recipeCategory); 
-
-		Recipe recipe = new Recipe(recipeId, recipeTitle, recipeDescription, ingredients,preperationTime, cookingTime,preparationMethod, numOfServings, cuisineCategory, foodCategory, recipeCategory,tags, nutritionValues, recipeUrl);
+		Recipe recipe = new Recipe();
 		recipe.setRecipeID(recipeId);
 		recipe.setRecipeName(recipeTitle);
 		recipe.setIngredientsName(ingredientsName);
@@ -349,48 +296,36 @@ public class RecipeScraperTest {
 		recipe.setRecipeDescription(recipeDescription);
 		recipe.setPreparationMethod(preparationMethod);
 		recipe.setNutritionValues(nutritionValues);
-		recipe.setTags(tags);
-		recipe.setCuisineCategory(cuisineCategory);
 		recipe.setRecipeUrl(recipeUrl);
 		recipe.setFoodCategory(foodCategory);
-		recipe.setRecipeCategory(recipeCategory);
 		recipe.setLfvRecipesToAvoid(lfvRecipesToAvoid);
+		
+		allRecipesList.add(recipe);
 
-		allRecipesList.add(recipe);	
+		//Getting Recipe Category (breakfast,lunch,snack,dinner)
 
+		db.insertRecipeData(recipeId, recipeTitle, preperationTime, cookingTime, ingredients, cuisineCategory, numOfServings);
 	}
-
-	public void insertRecipesIntoTable(String tableName, List<Recipe> recipes) throws SQLException {
-		for (Recipe recipe : recipes) {
-			db.insertData(tableName, recipe.getRecipeID(), recipe.getRecipeName(), recipe.getRecipeDescription(),
-					recipe.getIngredients(), recipe.getPreperationTime(), recipe.getCookingTime(),
-					recipe.getPreparationMethod(), recipe.getNumOfServings(), recipe.getCuisineCategory(),
-					recipe.getFoodCategory(), recipe.getRecipeCategory() ,recipe.getTags(), recipe.getNutritionValues(), recipe.getRecipeUrl());
-		}
-	}
-	/**
-	 * filtering recipe list based on ingredient names eliminatiom and add ingrediant conditions
-	 * @param recipeList
-	 * @param filterString
-	 * @param toBeNotIncluded
-	 * @return
-	 */
+	
 	public List<Recipe> filterRecipes(List<Recipe> recipeList,String filterString, boolean toBeNotIncluded)
 	{
 		List<Recipe> filteredRecipes = null;
 		//using java streams(lambda expression) for filtering data
 		//using streams to check if there is any match with the ingredients in array list and the string
 		if(toBeNotIncluded) {
-			filteredRecipes	= recipeList.stream().filter(rec ->
-			!Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
-					.collect(Collectors.toList());
+		filteredRecipes	= recipeList.stream().filter(rec ->
+		!Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
+				.collect(Collectors.toList());
 		}
 		else {
-			filteredRecipes = recipeList.stream().filter(rec ->
-			Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
-					.collect(Collectors.toList());
+		filteredRecipes = recipeList.stream().filter(rec ->
+		Arrays.stream(filterString.toLowerCase().split(",")).anyMatch(rec.getIngredientsName().toLowerCase()::contains))
+				.collect(Collectors.toList());
 		}
-		logger.info("Filtered Recipes: " + filteredRecipes.size() + " for filter: " + filterString);
 		return filteredRecipes;
+		
+		
 	}
+
+		
 }
