@@ -321,7 +321,7 @@ public class RecipeScraperTest {
 		String cuisineCategory = "";
 		String[] cuisineList = RecipeConstants.CUISIN_CATEGORY.split(",");
 		for(String e1 : cuisineList) { 
-			if((tags.toLowerCase()).contains(e1.toLowerCase())) {
+			if((combinedText.toLowerCase()).contains(e1.toLowerCase())) {
 				cuisineCategory = e1 + ", " +cuisineCategory; 
 			}
 		} 
