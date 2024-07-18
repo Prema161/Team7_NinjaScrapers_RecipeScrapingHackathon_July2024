@@ -70,9 +70,8 @@ public class RecipeScraperTest {
 		options.addArguments("--dns-prefetch-disable");
 		options.addArguments("--disable-gpu");
 		options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--disable-software-rasterizer");
-        options.addArguments("--disable-features=SharedStorageAPI");
-
+		options.addArguments("--disable-software-rasterizer");
+		options.addArguments("--disable-features=SharedStorageAPI");
 
 		driver = new ChromeDriver(options);
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -83,7 +82,7 @@ public class RecipeScraperTest {
 		for (String tableName : tableNames) {
 			db.createTable(tableName);
 		}
-		
+
 		try {
 			driver.get("https://www.tarladalal.com/");
 			driver.manage().window().maximize();
@@ -161,7 +160,6 @@ public class RecipeScraperTest {
 			lfvAddRecipes = lfvAddRecipes.stream().filter(rec->
 			!rec.isLfvRecipesToAvoid()).collect(Collectors.toList());
 
-
 			lfvToAddEliminationRecipes = filterRecipes(allRecipesList, RecipeConstants.LFV_TO_ELIMINATE_NFV, true);//here we get recipe list after elimination inlcuding butter
 			lfvToAddRecipes = filterRecipes(lfvToAddEliminationRecipes, RecipeConstants.LFV_TO_ADD, false);//filtering recipes with butter with add ingredients
 			lfvToAddRecipes.addAll(lfvAddRecipes);//adding "lfv to add recipes" with "lfv add recipes" to get partial vegan LFV recipes
@@ -210,7 +208,6 @@ public class RecipeScraperTest {
 			insertRecipesIntoTable("lchfnutallergy", lchfNutAllergyEliminationRecipes);
 			insertRecipesIntoTable("lchfotherallergy", lchfOtherAllergyEliminationRecipes);
 			insertRecipesIntoTable("lfvOptionalRecipes", lfvOptionalRecipes);
-
 
 			if (driver != null) {
 				driver.quit();

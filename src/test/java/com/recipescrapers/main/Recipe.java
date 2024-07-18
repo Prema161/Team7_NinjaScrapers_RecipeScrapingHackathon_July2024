@@ -26,10 +26,7 @@ public class Recipe {
 	        this.nutritionValues = nutritionValues;
 	        this.recipeUrl = recipeUrl;
 	    }
-	
-	
-	
-	
+
 	public String getCuisineCategory() {
 		return cuisineCategory;
 	}
@@ -45,8 +42,6 @@ public class Recipe {
 	public void setTags(String tags) {
 		this.tags = tags;
 	}
-	
-
 	
 	public String getIngredientsName() {
 		return ingredientsName;
@@ -162,7 +157,6 @@ public class Recipe {
 
 	public void setLfvRecipesToAvoid(boolean lfvRecipesToAvoid) {
 		this.lfvRecipesToAvoid = lfvRecipesToAvoid;
-	
 	
 	}
 	public boolean isLchfRecipesToAvoid() {
