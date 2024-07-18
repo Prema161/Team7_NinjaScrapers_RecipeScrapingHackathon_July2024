@@ -12,7 +12,7 @@ public class DatabaseClass {
     private static final String base_url = "jdbc:postgresql://localhost:5432/"; //"jdbc:mysql://localhost:3306/";
     private static final String DB_name = "recipes_scarping";
     private static final String username = "postgres";
-    private static final String password = "root";
+    private static final String password = "Sweethy123#";
     private Connection conn;
 
     public Connection connect() throws SQLException {
